@@ -14,7 +14,7 @@ namespace Metaparticle.Storage.Tests
             // act
             try
             {
-                var result = Metaparticle.Scoped().Data;
+                var result = MetaparticleStorage.Scoped().Data;
             }
             catch
             {
@@ -32,10 +32,10 @@ namespace Metaparticle.Storage.Tests
             var setValue = "Hello World";
 
             // act
-            Metaparticle.Scoped().Data = setValue;
+            MetaparticleStorage.Scoped().Data = setValue;
 
             // assert
-            Assert.Equal(setValue, Metaparticle.Scoped().Data);
+            Assert.Equal(setValue, MetaparticleStorage.Scoped().Data);
         }
     }
 }
