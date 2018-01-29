@@ -34,6 +34,5 @@ namespace Metaparticle.Storage
         {
             await _storage.StoreAsync(name, value);
         }
-
     }
 }
