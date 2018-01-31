@@ -6,36 +6,19 @@ namespace Metaparticle.Storage.Tests
     public class MetaparticleTests
     {
         [Fact]
-        public void GivenDataDoesntExist_WhenMetaparticleDataIsRequested_ThrowsDoesNotExist()
+        public async void GivenValidScopeAndFileStore_WhenScopedObjectValIsSet_ReturnValue()
         {
             // arrange
-            bool testPassed = false;
+            var mpStorage = new MetaparticleStorage(new MetaparticleFileStorage());
 
             // act
-            try
-            {
-                var result = MetaparticleStorage.Scoped().Data;
-            }
-            catch
-            {
-                testPassed = true;
-            }
-            
-            // assert
-            Assert.True(testPassed, "Didnt throw as expected");
-        }
-
-        [Fact]
-        public void GivenDataDoesntExist_SetData_ValueIsReturned()
-        {
-            // arrange
-            var setValue = "Hello World";
-
-            // act
-            MetaparticleStorage.Scoped().Data = setValue;
+            var result = await mpStorage.Scoped("global", (obj) => {
+                obj.Val = 123;
+                return obj.Val;
+            });
 
             // assert
-            Assert.Equal(setValue, MetaparticleStorage.Scoped().Data);
+            Assert.Equal(123, result);
         }
     }
 }

@@ -1,15 +1,28 @@
 ﻿using System;
 using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace Metaparticle.Storage
 {
     public class MetaparticleStorage
     {
-        private static dynamic scopedData = new ScopedObject(new MetaparticleFileStorage());
+        private static dynamic staticScopedData = new ScopedObject(new MetaparticleFileStorage());
 
-        public static dynamic Scoped(string scope = "")
+        private readonly IMetaparticleStorage _storage;
+        
+        private readonly dynamic _scopedData;
+
+        public MetaparticleStorage(IMetaparticleStorage storage)
         {
-            return scopedData;
+            _storage = storage;
+            _scopedData = new ScopedObject(_storage);
+        }
+
+        public async Task<object> Scoped(string name, Func<dynamic, object> fn)
+        {
+            var result = fn(_scopedData);
+            await Task.Delay(1000);
+            return result;
         }
     }
 }
