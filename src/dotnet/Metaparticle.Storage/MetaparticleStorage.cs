@@ -22,6 +22,7 @@ namespace Metaparticle.Storage
         public async Task<object> Scoped(string name, Func<dynamic, object> fn)
         {
             ValidateStorage();
+
             var result = fn(_scopedData);
             await Task.Delay(1000);
             return result;

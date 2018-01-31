@@ -11,15 +11,16 @@ namespace Metaparticle.Storage.Tests
         {
             // arrange
             var mpStorage = new MetaparticleStorage(new MetaparticleFileStorage());
+            var val = 123;
 
             // act
             var result = await mpStorage.Scoped("global", (obj) => {
-                obj.Val = 123;
+                obj.Val = val;
                 return obj.Val;
             });
 
             // assert
-            Assert.Equal(123, result);
+            Assert.Equal(val, result);
         }
 
         [Fact]
