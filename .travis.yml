@@ -5,6 +5,8 @@ matrix:
       sudo: required
       dotnet: 2.0.0
       mono: none
+      before_install:
+        - chmod +x ./src/dotnet/build.sh
       before_script:
         - cd src/dotnet
         - ls
