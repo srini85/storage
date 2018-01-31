@@ -1,4 +1,5 @@
 using System;
+using Metaparticle.Storage.Exceptions;
 using Xunit;
 
 namespace Metaparticle.Storage.Tests
@@ -19,6 +20,17 @@ namespace Metaparticle.Storage.Tests
 
             // assert
             Assert.Equal(123, result);
+        }
+
+        [Fact]
+        public async void GivenInvalidStorageSystem_WhenScopedIsCalled_ThrowsException()
+        {
+            // arrange
+            var mpStorage = new MetaparticleStorage(null);
+            
+            // act
+            // assert
+            await Assert.ThrowsAsync<StorageNotInitializedException>(()=> mpStorage.Scoped("global", (obj) => { return null; }));
         }
     }
 }

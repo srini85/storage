@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Dynamic;
 using System.Threading.Tasks;
+using Metaparticle.Storage.Exceptions;
 
 namespace Metaparticle.Storage
 {
@@ -20,9 +21,16 @@ namespace Metaparticle.Storage
 
         public async Task<object> Scoped(string name, Func<dynamic, object> fn)
         {
+            ValidateStorage();
             var result = fn(_scopedData);
             await Task.Delay(1000);
             return result;
+        }
+
+        private void ValidateStorage()
+        {
+            if (_storage == null)
+                throw new StorageNotInitializedException();
         }
     }
 }
