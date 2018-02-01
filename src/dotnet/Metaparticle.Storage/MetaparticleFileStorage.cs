@@ -1,20 +1,25 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Dynamic;
 
 namespace Metaparticle.Storage
 {
     public class MetaparticleFileStorage : IMetaparticleStorage
     {
-        Dictionary<string, object> valueDictionary = new Dictionary<string, object>();
+        Dictionary<string, ScopedObject> valueDictionary = new Dictionary<string, ScopedObject>();
 
         public async Task ConfigureAsync()
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task<object> LoadAsync(string name)
+        public async Task<dynamic> LoadAsync(string name)
         {
-            return await Task.FromResult<object>(valueDictionary[name]);
+            if (!valueDictionary.Keys.Any(x=>x == name))
+                return await Task.FromResult<dynamic>(new ScopedObject());
+                
+            return await Task.FromResult<dynamic>(valueDictionary[name]);
         }
 
         public async Task ShutdownAsync()
@@ -22,10 +27,10 @@ namespace Metaparticle.Storage
             throw new System.NotImplementedException();
         }
 
-        public async Task StoreAsync(string name, object data)
+        public async Task<bool> StoreAsync(string name, dynamic data)
         {
-            valueDictionary.Add(name, data);
-            await Task.CompletedTask;
+            await Task.Delay(500); // file write operation here
+            return await Task.FromResult(true);
         }
     }
 }

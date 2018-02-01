@@ -7,31 +7,45 @@ namespace Metaparticle.Storage
 {
     public class MetaparticleStorage
     {
-        private static dynamic staticScopedData = new ScopedObject(new MetaparticleFileStorage());
-
         private readonly IMetaparticleStorage _storage;
         
-        private readonly dynamic _scopedData;
+        private dynamic _scopedData;
 
         public MetaparticleStorage(IMetaparticleStorage storage)
         {
             _storage = storage;
-            _scopedData = new ScopedObject(_storage);
         }
 
         public async Task<object> Scoped(string name, Func<dynamic, object> fn)
         {
             ValidateStorage();
-
-            var result = fn(_scopedData);
-            await Task.Delay(1000);
-            return result;
+            
+            return await LoadExecuteStore(name, fn);
         }
 
         private void ValidateStorage()
         {
             if (_storage == null)
                 throw new StorageNotInitializedException();
+        }
+
+        private async Task<object> LoadExecuteStore(string name, Func<dynamic, object> fn)
+        {
+            _scopedData = await _storage.LoadAsync(name);
+            _scopedData.Dirty = false;
+
+            var result = fn(_scopedData);
+            if (_scopedData.Dirty)
+            {
+                var success = await _storage.StoreAsync(name, _scopedData);
+                if (!success)
+                {
+                    await Task.Delay(100);
+                    await LoadExecuteStore(name, fn);
+                }
+            }
+            
+            return result;
         }
     }
 }

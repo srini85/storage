@@ -14,9 +14,9 @@ namespace Metaparticle.Storage.Tests
             var val = 123;
 
             // act
-            var result = await mpStorage.Scoped("global", (obj) => {
-                obj.Val = val;
-                return obj.Val;
+            var result = await mpStorage.Scoped("global", (scope) => {
+                scope.Val = val;
+                return scope.Val;
             });
 
             // assert

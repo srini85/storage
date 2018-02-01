@@ -1,38 +1,33 @@
 using System;
 using System.Dynamic;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Metaparticle.Storage
 {
     public class ScopedObject : DynamicObject
     {
-        private readonly IMetaparticleStorage _storage;
-        public ScopedObject(IMetaparticleStorage storage)
-        {
-            _storage = storage;
-        }
-        
+        public bool Dirty = false;
+        private Dictionary<string, object> data = new Dictionary<string, object>();
+
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = TryGetMemberAsync(binder.Name).GetAwaiter().GetResult();
-            return true;
-        }
+            result = null;
+            if (!data.ContainsKey(binder.Name))
+                return false;
 
-        private async Task<object> TryGetMemberAsync(string name)
-        {
-            return await _storage.LoadAsync(name);
-        }
+            result = data[binder.Name];
+            return true;
+        }        
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            TrySetMemberAsync(binder.Name, value).GetAwaiter().GetResult();
-            return true;
-        }
+            if (!data.ContainsKey(binder.Name))
+                data.Add(binder.Name, value);
+            else
+                data[binder.Name] = value;
 
-        private async Task TrySetMemberAsync(string name, object value)
-        {
-            await _storage.StoreAsync(name, value);
+            Dirty = true;
+            return true;
         }
     }
 }
