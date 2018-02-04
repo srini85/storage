@@ -10,17 +10,24 @@ namespace Metaparticle.Storage.Tests
         public async void GivenValidScopeAndFileStore_WhenScopedObjectValIsSet_ReturnValue()
         {
             // arrange
-            var mpStorage = new MetaparticleStorage(new MetaparticleFileStorage());
-            var val = 123;
+            var mpStorage = new MetaparticleStorage(new MetaparticleFileStorage(new MetaparticleFileStorageConfig {Directory = "c:\\temp"}));
+            var val = 1;
 
             // act
-            var result = await mpStorage.Scoped("global", (scope) => {
-                scope.Val = val;
+            var result = mpStorage.Scoped("global", (scope) => {
+                scope.Val++;
                 return scope.Val;
             });
 
+            var result2 = mpStorage.Scoped("global", (scope) => {
+                scope.Val++;
+                return scope.Val;
+            });
+
+            var results = await System.Threading.Tasks.Task.WhenAll(result, result2);
+
             // assert
-            Assert.Equal(val, result);
+            Assert.Equal(val, results[0]);
         }
 
         [Fact]

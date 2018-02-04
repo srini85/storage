@@ -8,8 +8,6 @@ namespace Metaparticle.Storage
     public class MetaparticleStorage
     {
         private readonly IMetaparticleStorage _storage;
-        
-        private dynamic _scopedData;
 
         public MetaparticleStorage(IMetaparticleStorage storage)
         {
@@ -19,7 +17,6 @@ namespace Metaparticle.Storage
         public async Task<object> Scoped(string name, Func<dynamic, object> fn)
         {
             ValidateStorage();
-            
             return await LoadExecuteStore(name, fn);
         }
 
@@ -31,21 +28,44 @@ namespace Metaparticle.Storage
 
         private async Task<object> LoadExecuteStore(string name, Func<dynamic, object> fn)
         {
-            _scopedData = await _storage.LoadAsync(name);
-            _scopedData.Dirty = false;
+            dynamic resultantValue = null;
+            var persistedData = await LoadScopeFromStorageAsync(name);
+            persistedData.Data.Dirty = false;
 
-            var result = fn(_scopedData);
-            if (_scopedData.Dirty)
+            var result = fn(persistedData.Data);
+            if (persistedData.Data.Dirty)
             {
-                var success = await _storage.StoreAsync(name, _scopedData);
+                var success = await _storage.StoreAsync(name, persistedData);
                 if (!success)
                 {
                     await Task.Delay(100);
-                    await LoadExecuteStore(name, fn);
+                    resultantValue = await LoadExecuteStore(name, fn);
                 }
+                if (resultantValue == null)
+                    resultantValue = persistedData.Data;
             }
             
-            return result;
+            return resultantValue;
+        }
+
+        private async Task<PersistedScopedObject> LoadScopeFromStorageAsync(string name)
+        {
+            PersistedScopedObject persistedScopedObject;
+            while (true)
+            {
+                try 
+                {
+                    persistedScopedObject = await _storage.LoadAsync(name);
+                    break;
+                }
+                catch
+                {
+                    Console.WriteLine("Error loading file. Will be retrying.");
+                    await Task.Delay(100);
+                }
+            }
+
+            return persistedScopedObject;
         }
     }
 }

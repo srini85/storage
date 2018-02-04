@@ -9,6 +9,11 @@ namespace Metaparticle.Storage
         public bool Dirty = false;
         private Dictionary<string, object> data = new Dictionary<string, object>();
 
+        public Dictionary<string, object> GetProperties()
+        {
+            return data;
+        }
+
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             result = null;

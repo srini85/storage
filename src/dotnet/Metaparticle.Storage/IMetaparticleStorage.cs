@@ -8,8 +8,8 @@ namespace Metaparticle.Storage
 
         Task ShutdownAsync();
 
-        Task<bool> StoreAsync(string name, dynamic data);
+        Task<bool> StoreAsync(string name, PersistedScopedObject data);
 
-        Task<dynamic> LoadAsync(string name);
+        Task<PersistedScopedObject> LoadAsync(string name);
     }
 }
