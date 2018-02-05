@@ -25,11 +25,10 @@ namespace SimpleStorageExample
             {
                 Console.WriteLine($"About to IncrementCounter from task id: {taskId}");
                 var mpStorage = new MetaparticleStorage(new MetaparticleFileStorage(new MetaparticleFileStorageConfig{Directory = "c:\\temp"}));
-                var result = await mpStorage.Scoped("global", (scope) => {
-                    if (!scope.Val)
+                var result = await mpStorage.Scoped("globalscope", (scope) => {
+                    if (scope.Val == null)
                         scope.Val = 0;
-                        
-                    Console.WriteLine($"scoped value is: {scope.Val}");
+
                     scope.Val++;
                     return scope.Val;
                 });

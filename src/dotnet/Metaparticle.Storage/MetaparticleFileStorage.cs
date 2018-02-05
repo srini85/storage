@@ -27,12 +27,12 @@ namespace Metaparticle.Storage
 
         public async Task<PersistedScopedObject> LoadAsync(string name)
         {
-            
             FileInfo fileInfo;
             var file = FullPathToFile(name);
 
             try
             {
+                CreateFileIfNotExist(file);
                 fileInfo = new FileInfo(file);
             }
             catch (Exception e)
@@ -47,9 +47,19 @@ namespace Metaparticle.Storage
             {
                 json = await JObject.LoadAsync(new JsonTextReader(new StreamReader(asyncFileStream)));
             }
-            
 
             return new PersistedScopedObject { ModifiedTime = fileInfo.LastWriteTimeUtc, Data = json.ToObject<ScopedObject>() };
+        }
+
+        private void CreateFileIfNotExist(string file)
+        {
+            if (!File.Exists(file))
+            {
+                using (StreamWriter sw = File.CreateText(file)) 
+                {
+                    sw.WriteLine("{}");
+                }
+            }
         }
 
         public async Task ShutdownAsync()
@@ -60,11 +70,8 @@ namespace Metaparticle.Storage
         public async Task<bool> StoreAsync(string name, PersistedScopedObject data)
         {
             var file = FullPathToFile(name);
-            var lastWriteTime = File.GetLastWriteTimeUtc(file);
-            if (lastWriteTime != data.ModifiedTime)
-            {
+            if (File.GetLastWriteTimeUtc(file) != data.ModifiedTime)
                 return false;
-            }
 
             try
             {
@@ -78,7 +85,8 @@ namespace Metaparticle.Storage
                 Console.WriteLine($"Error writing to file. {e.Message}");
                 return false;
             }
-            return await Task.FromResult(true);
+
+            return true;
         }
 
         private string FullPathToFile(string name)

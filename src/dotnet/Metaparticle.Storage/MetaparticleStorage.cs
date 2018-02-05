@@ -65,7 +65,7 @@ namespace Metaparticle.Storage
                 }
             }
 
-            return persistedScopedObject;
+            return persistedScopedObject?? await LoadScopeFromStorageAsync(name);
         }
     }
 }

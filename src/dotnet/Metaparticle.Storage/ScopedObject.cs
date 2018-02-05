@@ -16,13 +16,9 @@ namespace Metaparticle.Storage
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = null;
-            if (!data.ContainsKey(binder.Name))
-                return false;
-
-            result = data[binder.Name];
+            data.TryGetValue(binder.Name, out result);
             return true;
-        }        
+        }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
