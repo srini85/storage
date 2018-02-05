@@ -55,9 +55,10 @@ namespace Metaparticle.Storage
         {
             if (!File.Exists(file))
             {
-                using (StreamWriter sw = File.CreateText(file)) 
+                using (FileStream fs = File.Create(file)) 
                 {
-                    sw.WriteLine("{}");
+                    var blankObj = new System.Text.UTF8Encoding().GetBytes("{}");
+                    fs.Write(blankObj,0, blankObj.Length);
                 }
             }
         }
