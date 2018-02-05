@@ -38,7 +38,7 @@ namespace Metaparticle.Storage.Tests
 
             // assert
             // confirm we have incremented twice
-            Assert.Equal(3, (int)(results[0] as dynamic).Val + (int)(results[1] as dynamic).Val);
+            Assert.Equal(3, Convert.ToInt32(results[0]) + Convert.ToInt32(results[1]));
         }
 
         [Fact]

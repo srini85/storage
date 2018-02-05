@@ -32,7 +32,7 @@ namespace SimpleStorageExample
                     scope.Val++;
                     return scope.Val;
                 });
-                Console.WriteLine($"Result is: {(result as dynamic).Val}");
+                Console.WriteLine($"Result is: {result}");
             });
         }
     }

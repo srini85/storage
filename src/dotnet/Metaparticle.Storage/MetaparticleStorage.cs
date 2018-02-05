@@ -42,7 +42,7 @@ namespace Metaparticle.Storage
                     resultantValue = await LoadExecuteStore(name, fn);
                 }
                 if (resultantValue == null)
-                    resultantValue = persistedData.Data;
+                    resultantValue = result;
             }
             
             return resultantValue;
